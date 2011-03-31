@@ -1,0 +1,158 @@
+@charset "UTF-8";
+/***Colors**
+body					#e4ecf6 rgba(228, 236, 246, 1);
+header, nav				#d9e1ea rgba(217, 225, 234,1);
+font dark				#87a2ba rgba(135, 162, 186);
+font light, footer		#f2ffff	rgba(242, 255, 255, 1);
+font nav				#9eb2c4 rgba(158, 178, 196, 1);
+font form				#495b6c	rgba(73, 91, 108, 1);
+
+**/
+#np_postings{
+	margin:40px 10%;
+	width:680px;
+}
+
+#url{
+	font-family:Verdana, Geneva, sans-serif;
+	color:#495b6c;
+	font-size:1.6em;
+	margin-top:10px;
+}
+#np_post{
+	font-family:Verdana, Geneva, sans-serif;
+	color:#9eb2c4;
+	width:300px;
+}
+select{
+	font-size:1.4em;
+}
+
+#areacontainer{
+	margin:30px 10% 0px;
+	width:660px;
+	top:-25px;
+	position:relative;
+}
+
+#mediacontainer{
+	float:right;
+	padding:3px;
+	margin-right:10px;
+	position:relative;
+	font-family:Verdana, Geneva, sans-serif;
+	color:#495b6c;
+	color:rgba(73, 91, 108, 1);
+	font-size:1.4em;
+	display:inherit;
+}
+#mediacontainer .Stext{
+	float:left;
+	top:-10px;
+}
+#mediacontainer .ico{
+	width:24px;
+	height:24px;
+	float:left;
+	opacity: 0.5;
+	-moz-opacity:0.5;
+	-khtml-opacity: 0.5;
+	filter:alpha(opacity=50);
+	margin:3px;
+	position:relative;
+	top:-10px;
+}
+
+#mediacontainer .ico:hover{
+	opacity: 1;
+	-moz-opacity:1;
+	-khtml-opacity: 1;
+	filter:alpha(opacity=100);
+}
+
+#media{
+	background:url(../../media/admin/images/media-inverse.png);
+}
+
+#areacontainer .Tog_btn{
+	background:#d9e1ea;
+	color:#495b6c;
+	color:rgba(73, 91, 108, 1);
+	font-size:1.6em;
+	padding:4px;
+	float:right;
+	margin:0px 0px 0px 3px;
+	position:relative;
+}
+#areacontainer .desel{
+	opacity: 0.5;
+	-moz-opacity:0.5;
+	-khtml-opacity: 0.5;
+	filter:alpha(opacity=50);
+}
+#areacontainer span{
+	cursor:pointer;
+}
+
+#editor_container{
+	margin-left:10%;
+	padding:0;
+	margin-top:-1px;
+}
+.editor{
+	width:660px;
+	font-family:Verdana, Geneva, sans-serif;
+	color:#495b6c;
+	color:rgba(73, 91, 108, 1);
+	height:300px;
+	font-size:2.2em;
+	resize:none;
+	border:none;
+	
+}
+
+#np_misc{
+	margin:10px 10%;
+	width:660px;
+}
+.post_head {
+	font-size:2.2em;
+	margin-left:10%;
+	color:#495b6c;
+	font-family: 'RalewayThin';
+	cursor:pointer;
+}
+.post_head:hover{
+	text-decoration:underline;
+}
+
+h3.closed span{
+	background:url(../../media/admin/images/closed_btn.png);
+	width:24px;
+	height:24px;
+	display:block;
+	float:left;
+}
+
+h3.open span{
+	background:url(../../media/admin/images/open_btn.png);
+	width:24px;
+	height:24px;
+	display:block;
+	float:left;
+}
+div.closed{
+	display:none;
+}
+div.open{
+	display:block;
+	width:660px;
+	margin:10px 0 0 15%;
+	font-family:Verdana, Geneva, sans-serif;
+	color:#495b6c;
+	font-size:1.8em;
+}
+.cal_text{
+	width:100px;
+	color:#9eb2c4;
+}
