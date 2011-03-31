@@ -1,0 +1,28 @@
+<IfModule mod_deflate.c>
+# html, txt, css, js, json, xml, htc:
+AddOutputFilterByType DEFLATE text/html text/plain text/css application/json
+AddOutputFilterByType DEFLATE text/javascript application/javascript application/x-javascript
+AddOutputFilterByType DEFLATE text/xml application/xml text/x-component 
+# webfonts and svg:
+	<FilesMatch "\.(ttf|otf|eot|svg)$" >
+	 	 SetOutputFilter DEFLATE
+ 	</FilesMatch>
+</IfModule>
+
+#DON'T TOUCH ANYTHING!
+<IfModule mod_rewrite.c>
+RewriteEngine On
+# If subdomain www exists, remove it first
+RewriteCond %{HTTP_HOST} ^www\.([^\.]+\.[^\.]+)$ [NC]
+RewriteRule ^(.*)$ http://%1/$1 [R=301,L]
+# If there is a trailing slash, remove it
+RewriteCond %{HTTP_HOST} !^\.localhost$ [NC]
+RewriteRule ^(.+)/$ http://%{HTTP_HOST}/$1 [R=301,L]
+RewriteBase /
+# If the file doesn't exist serve the index file
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . index.php%{ENV:REQUEST_URI} [NE,L]
+
+</IfModule>
+ServerSignature Off
