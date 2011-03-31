@@ -1,5 +1,5 @@
 <?php
-require_once(ROOT.DS.MAIN.DS.'library'.DS.'session_check.php');
+require_once(ROOT.DS.MAIN.DS.'library'.DS.'session_check_load.php');
 class Upload_files{
 	
 	protected $_filename;
