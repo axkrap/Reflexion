@@ -1,0 +1,386 @@
+====================================
+Reflexion Content Management System
+====================================
+
+Created by Nathan Sweet. Reflexion is under the GNU liscence. It utilizes
+the following open source projects
+-Simple HTML DOM Parser (http://simplehtmldom.sourceforge.net/)
+-PHP XML-RPC (http://phpxmlrpc.sourceforge.net/)
+-PHP-Pingback (https://github.com/frekw/PHP-Pingback)
+
+-----------------------------------
+Introduction
+-----------------------------------
+
+In a world where "cache is king", it is becoming increasingly foolish, not to
+implement some sort of caching system in a website. Unfortunately there are
+very few open-source options that come in with a built-in caching system. It 
+seems that websites that are in the most need of caching, such as restaurant,
+event, and blog websites that experience unpredictable traffic patterns, are
+often the websites that don't utilize caching. Furthermore these websites tend
+to be found on shared hosting, which would further necessitate a good caching
+system. Often the developers of these websites are not skilled enough to implement
+an effective caching system, but more often they usually do not have the time
+or resources to make the investment. Reflexion hopes to do this for them.
+
+-----------------------------------
+Specifications
+-----------------------------------
+
+Reflexion is PHP based CMS that stores is data on a MySQL database. Reflexion,
+has most of the features of most blogging platforms: Templating, Drafting, Media-management,
+Comments, RSS, Pingbacks, et al. The one difference is that Reflexion consistently,
+and smartly caches all web pages when they are published, and furthermore, recaches them
+as they are modified by the CMS (when comments are added, etc). Reflexion is also able to
+determine when a web page needs to be recached based on the publication of a new post, determining
+if a posts recent publication affects another post, and if so it recaches it to reflect the changes.
+In short: Reflexion is able to efficiently mirror its database without tons of user input.
+
+-----------------------------------
+Getting Started
+-----------------------------------
+
+Reflexion is still in beta development. If you would like to use it and be a part of getting the
+bugs out send me an email (nathanjsweet@gmail.com). Everything gets placed in the folder that your
+domain-name is pointing towards. In order to get started you need to go into "reflexion/config" and
+open up the "config.php" and "db.php" files. The only constant you need to modify in the "config.php"
+is "THIS_DOMAIN", this should be what your domain looks like without "http://". The htaccess file
+automatically omits the www prefix, so by default the THIS_DOMAIN constant should be set to "example.com".
+"db.php" is pretty self-explanatory. Also you need to have a cron run the script "library/cron_caller.php"
+every minute (don't worry it won't run your server down). Other than the database, that's it! Every other
+setting can be modified by the UI.
+
+-----------------------------------
+The Data Base
+-----------------------------------
+I'm working on getting a database installation file up and running,
+but for now you're just going to have to go off this database map:
+
+database: 'Yourdatabase'
+	table : `authors`
+		column : `id`
+			type :  bigint
+			length : 20
+			allownull : false
+			key : primary (MUL)
+			default : NULL
+			extra : auto_increment
+		column : `author`
+			type :  text
+			length :
+			allownull : false
+			key :
+			default : NULL
+	table : `categories`
+		column : `id`
+			type :  bigint
+			length : 20
+			allownull : false
+			key : primary (MUL)
+			default : NULL
+			extra : auto_increment
+		column : `category`
+			type :  text
+			length :
+			allownull : false
+			key :
+			default : NULL
+	table : `templates`
+		column : `id`
+			type :  bigint
+			length : 20
+			allownull : false
+			key : primary (MUL)
+			default : NULL
+			extra : auto_increment
+		column : `name`
+			type :  text
+			length :
+			allownull : false
+			key :
+			default : NULL
+		column : `css`
+			type :  text
+			length :
+			allownull : false
+			key :
+			default : NULL
+		column : `rep`
+			type :  tinyint
+			length : 1
+			allownull : false
+			key :
+			default : 0
+		column : `date`
+			type :  biging
+			length : 20
+			allownull : false
+			key :
+			default : NULL
+	table : `users`
+		column : `id`
+			type :  bigint
+			length : 20
+			allownull : false
+			key : primary (MUL)
+			default : NULL
+			extra : auto_increment
+		column : `user`
+			type :  text
+			length :
+			allownull : false
+			key :
+			default : NULL
+		column : `password`
+			type :  text
+			length :
+			allownull : false
+			key :
+			default : NULL
+		column : `email`
+			type :  text
+			length :
+			allownull : false
+			key :
+			default : NULL
+		column : `loggedin`
+			type :  tinyint
+			length : 1
+			allownull : false
+			key :
+			default : NULL
+		column : `logtime`
+			type :  bigint
+			length : 20
+			allownull : false
+			key :
+			default : NULL
+		column : `admin`
+			type :  tinyint
+			length : 1
+			allownull : false
+			key :
+			default : NULL 
+	table : `comments`
+		column : `id`
+			type :  bigint
+			length : 20
+			allownull : false
+			key : primary (MUL)
+			default : NULL
+			extra : auto_increment
+		column : `post_slug`
+			type :  text
+			length :
+			allownull : false
+			key :
+			default : NULL
+		column : `author_name`
+			type :  tinytext
+			length :
+			allownull : false
+			key :
+			default : NULL
+		column : `author_email`
+			type :  varchar
+			length : 100
+			allownull : false
+			key :
+			default : NULL
+		column : `author_ip`
+			type :  varchar
+			length : 100
+			allownull : false
+			key :
+			default : NULL
+		column : `author_url`
+			type :  varchar
+			length : 200
+			allownull : false
+			key :
+			default : NULL
+		column : `time`
+			type :  bigint
+			length : 20
+			allownull : false
+			key :
+			default : NULL
+		column : `content`
+			type :  text
+			length : 
+			allownull : false
+			key :
+			default : NULL
+		column : `karma`
+			type :  int
+			length : 11
+			allownull : false
+			key :
+			default : NULL
+		column : `approved`
+			type :  text
+			length : 
+			allownull : false
+			key :
+			default : NULL
+		column : `agent`
+			type :  varchar
+			length : 255
+			allownull : false
+			key :
+			default : NULL
+		column : `parent`
+			type :  bigint
+			length : 20
+			allownull : false
+			key :
+			default : NUL
+		column : `type`
+			type :  text
+			length : 
+			allownull : false
+			key :
+			default : NUL
+	table : `posts`
+		column : `id`
+			type :  bigint
+			length : 20
+			allownull : false
+			key : primary (MUL)
+			default : NULL
+			extra : auto_increment
+		column : `title`
+			type :  text
+			length :
+			allownull : false
+			key :
+			default : NULL
+		column : `slug`
+			type :  text
+			length :
+			allownull : false
+			key :
+			default : NULL
+		column : `description`
+			type :  text
+			length :
+			allownull : false
+			key :
+			default : NULL
+		column : `template`
+			type :  text
+			length :
+			allownull : false
+			key :
+			default : NULL
+		column : `category`
+			type :  text
+			length :
+			allownull : false
+			key :
+			default : NULL
+		column : `author`
+			type :  text
+			length :
+			allownull : false
+			key :
+			default : NULL
+		column : `commentsbool`
+			type :  tinyint
+			length : 1
+			allownull : false
+			key :
+			default : NULL
+		column : `pingbacks`
+			type :  text
+			length :
+			allownull : false
+			key :
+			default : NULL
+		column : `publish`
+			type :  tinyint
+			length : 1
+			allownull : false
+			key :
+			default : NULL
+		column : `post`
+			type :  text
+			length :
+			allownull : false
+			key :
+			default : NULL
+		column : `pingbool`
+			type :  tinyint
+			length : 1
+			allownull : false
+			key :
+			default : NULL
+		column : `publishdate`
+			type :  bigint
+			length : 20
+			allownull : false
+			key :
+			default : NULL
+		column : `cachepub`
+			type :  tinyint
+			length : 1
+			allownull : false
+			key :
+			default : NULL
+		column : `approved_comments`
+			type :  int
+			length : 11
+			allownull : true
+			key :
+			default : NULL
+		column : `comments_off`
+			type :  bigint
+			length : 20
+			allownull : false
+			key :
+			default : 99999999999999999
+		column : `pending_comments`
+			type :  int
+			length : 11
+			allownull : true
+			key :
+			default : NULL
+		column : `pings`
+			type :  int
+			length : 11
+			allownull : true
+			key :
+			default : NULL
+
+-----------------------------------
+Requirements
+-----------------------------------
+
+A server that has the following:
+
+- PHP 5.3 installed
+- MySQL 5.x installed
+- Access to Shell
+
+===================================
+Usage
+===================================
+I'm hoping to have comprehensive documentation in a 6 months.
+----------------------------------
+Settings
+----------------------------------
+The first thing you should do is go to "yourdomain.com/admin". From here, go to settings,
+and play around for a bit.
+----------------------------------
+Templating
+----------------------------------
+In order to understand Reflexion you must completely understand the class "Creat_new_post",
+which can be found in "classes/internals". This class is the context in which every single
+post is published. I'll have more to offer on this subject soon.
+===================================
+TO DO
+===================================
+-Finish Pingback Server
+-Finish file inserter on tiny_mce implementation in the "admin/index" file.
+-Comment post to server class
+-Documentation
