@@ -1,0 +1,1 @@
+<?php $thisDB = array("title"=>'Here\'s something new', "slug"=>'dont-publish', "description"=>'Whatever', "template"=>'index', "category"=>'php', "author"=>'Nathan Sweet', "comments"=>true, "pingbacks"=>'', "publish"=>true, "post"=>'adsfasdfasd', "pingbacks_bool"=>true, "publish_date"=>1299352527);
