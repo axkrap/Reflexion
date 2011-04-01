@@ -50,6 +50,7 @@ for($i=0; $i < count($post_arr); ++$i){
 					'.($value["publish"] == 1 ? '' : '<li id="'.$local.'_pub'.'">THIS POST IS NOT PUBLISHED</li>
 					').'<li>'.$value["description"].'</li>
 					<li><a href="'.ADMIN_URL.'?edit='.$local.'" target="_self">Edit</a> | <a href="'.ADMIN_URL.'/preview?view='.$local.'" target="_blank">Preview</a></li>
+					<li>There are''</li>
 				</ul>
 			</td>
 			<td colspan="3">

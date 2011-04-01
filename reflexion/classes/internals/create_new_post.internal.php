@@ -81,9 +81,6 @@ class Create_new_post {
 			$arr2 = array('time'=>time(),'command'=>'republish_post','parameters'=>array($cacheNum[$i]['Post']['slug']));
 			$cron2 = new Cron_job($arr2);
 		}
-		$s = 'http://'.THIS_DOMAIN.'/'.$this->slug;
-		loadIntClass('pingforward');
-		$some = new Pingforward($this->_pingbacks,$s);
 	}
 	function directory_create() {
 		if($this->_category === 'none') {

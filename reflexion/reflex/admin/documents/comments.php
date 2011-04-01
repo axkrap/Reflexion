@@ -14,7 +14,7 @@ $approved = 0;
 $spam = 0;
 for($i = 0; $i < count($comments); ++$i){
 			$table .= '
-					<tr id="'.$comments[$i]['id'].'" class="'.$comments[$i]['approved'].'" title="'.$comments[$i]['type'].'">
+					<tr id="'.$comments[$i]['id'].'" class="'.$comments[$i]['approved'].'" title="comment">
                     	<td><input title="'.$comments[$i]['id'].'" type="checkbox" class="table_check" /></td>
                         <td class="auth">'.$comments[$i]['author_name'].'</td>
                         <td class="comm">'.$comments[$i]['content'].'</td>

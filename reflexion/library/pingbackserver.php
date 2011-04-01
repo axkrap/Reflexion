@@ -1,109 +1,116 @@
 <?php
-require_once(ROOT.DS.MAIN.DS.'library'.DS.'xmlrpc'.DS.'xmlrpc.php');
-require_once(ROOT.DS.MAIN.DS.'library'.DS.'xmlrpc'.DS.'xmlrpcs.php');
-require_once(ROOT.DS.MAIN.DS.'library'.DS.'pingbackutility.php');
-class PingbackServer {
-  public static $FAULT_GENERIC = array('faultCode' => 0, 'faultString' => 'Unknown error.');
-  public static $FAULT_SOURCE = array('faultCode' => 0x0010, 'faultString' => 'The source URI does not exist.');
-  public static $FAULT_SOURCE_LINK = array('faultCode' => 0x0011, 'faultString' => 'The source URI does not contain a link to the target URI, and so cannot be used as a source.');
-  public static $FAULT_TARGET = array('faultCode' => 0x0020, 'faultString' => 'The specified target URI does not exist.');
-  public static $FAULT_TARGET_INVALID = array('faultCode' => 0x0021, 'faultString' => 'The specified target URI cannot be used as a target.');
-  public static $FAULT_ALREADY_REGISTERED = array('faultCode' => 0x0030, 'faultString' => 'The pingback has already been registered.');
-  public static $FAULT_ACCESS_DENIED = array('faultCode' => 0x0031, 'faultString' => 'Access denied.');
-  public static $SUCCESS = array('Success');
-  
-  private $server;
-  
-  private $request;
-  private $response;
-  
-  private $sourceURL;
-  private $targetURL;
-  
-  private $sourceBody;
-  private $targetBody;
-  
-  private $hasFault = false;
-  private $fault;
-  
-  public function __construct($request){
-    $this->server = xmlrpc_server_create();
-    $this->setRequest($request);
-    xmlrpc_server_register_method($this->server, 'pingback.ping', array($this, 'ping'));
-  }
-  
-  private function ping($method, $parameters){
-    list($this->sourceURL, $this->targetURL) = $parameters;
-    
-    if(!PingbackUtility::isURL($this->sourceURL)) return $this->setFault(self::$FAULT_SOURCE);
-    if(!PingbackUtility::isURL($this->targetURL)) return $this->setFault(self::$FAULT_TARGET);
-    if(!PingbackUtility::isPingbackEnabled($this->targetURL)) return $this->setFault(self::$FAULT_TARGET_INVALID);
-    if(!PingbackUtility::isBacklinking($this->sourceURL, $this->targetURL)) return $this->setFault(self::$FAULT_SOURCE_LINK);
-    
-    // if no error occured, all went well.
-    return $this->setSuccess();
-  }
-  
-  public function execute(){
-    $this->response = xmlrpc_server_call_method($this->server, $this->request, null, array('encoding' => 'utf-8'));
-    return $this->isValid();
-  }
-  
-  public function setResponse($response){
-    $this->response = $response;
-  }
-  
-  public function setRequest($request){
-    $this->request = $request;
-  }
-  
-  public function getRequest(){
-    return $this->request;
-  }
-  
-  public function getResponse(){
-    return $this->response;
-  }
-  
-  public function getSourceURL(){
-    return $this->sourceURL;
-  }
-  
-  public function getTargetURL(){
-    return $this->targetURL;
-  }
-  
-  public function getFaultCode(){
-    return $this->hasFault ? $this->fault['faultCode'] : null;
-  }
-  
-  public function getFaultString(){
-    return $this->hasFault ? $this->fault['faultString'] : null;
-  }
-  
-  public function hasFault($fault){
-    return $fault === $this->fault;
-  }
-  
-  public function setFault($fault){
-    $this->hasFault = true;
-    $this->fault = $fault;
-    $this->response = xmlrpc_encode($fault);
-    return $fault;
-  }
-  
-  public function setSuccess($success = array()){
-    $this->hasFault = false;
-    $this->fault = null;
-		$success = !empty($success) ? $success : self::$SUCCESS;
-    $this->response = xmlrpc_encode($success);
-	loadIntClass('sql_query');
-	$sql = new Sql_query('comments');
-	$sql->query('INSERT INTO `comments` (post_slug) VALUES(\''.$success.'\')')
-    return $success;
-  }
-  
-  public function isValid(){
-    return !$this->hasFault;
-  }
+header("Content-Type: application/xml");
+require_once(ROOT.DS.MAIN.DS.'library'.DS.'simple_html_dom.php');
+require_once(ROOT.DS.MAIN.DS.'library'.DS.'xmlrpc'.DS.'xmlrpc.inc');
+require_once(ROOT.DS.MAIN.DS.'library'.DS.'xmlrpc'.DS.'xmlrpcs.inc');
+loadIntClass('sql_query');
+class PingbackServer{
+	
+	protected $_sourceURL;
+	protected $_destinationURL;
+	protected $_response;
+	protected $_responseMessage;
+	function __construct(){
+		$pingFunction = array( "pingback.ping" => array( "function" => "PingbackServer::serverParser" ));
+		$server  = new xmlrpc_server($pingFunction);
+		$server->setdebug(3);
+		$server->service();
+	}
+	
+	function serverParser($rpcMessage){
+		$param1 = $rpcMessage->getParam(0);
+        $param2 = $rpcMessage->getParam(1);
+        $this->_sourceURL = $param1->scalarval(); # their article
+        $this->_destinationURL = $param1->scalarval(); # your article
+		$parseDestination = parse_url($this->_destinationURL);
+		if($parseDestination['host'] !== THIS_DOMAIN && 'www.'.$parseDestination['host'] !== THIS_DOMAIN && $parseDestination['host'] !== 'www.'.THIS_DOMAIN){
+			$this->_response = 32;
+			$this->_resonseMessage = 'Not only does the URI not exist, the domain is incorrect.';
+			return $this->pingServer();
+		}
+		else if(!file_exists(ROOT.DS.MAIN.DS.'reflex'.DS.'documents'.DS.str_replace('/',DS,strtolower($parseDestination['path']))).'.php'){
+			$this->_response = 32;
+			$this->_responseMessage = 'The URI does not exist';
+			return $this->pingServer();
+		}
+		else{
+			$this->checkURI($parseDestination['path']);
+		}
+	}
+	
+	function checkURI($uri){
+		$slug = explode('/',$uri);
+		$slug = $slug[count($slug)-1];
+		$sql = new Sql_query('posts');
+		$postArr = $sql->query('SELECT * FROM `posts` WHERE `slug`=\''.$slug.'\'');
+		if(intval($postArr[0]['pingbool']) === 0){
+			$this->_resonse = 33;
+			$this->_responseMessage = 'The URI does not accept pingbacks';
+			return $this->pingServer();
+		}
+		else{
+			$string = file_get_contents($this->_sourceURL)
+			if($html !== false){
+				$html = new simple_html_dom();
+				$html->load($string);
+				$anchors = $html->find('a[href]');
+				$exists = false;
+				$path = '';
+				for($i = 0; $i < count($anchors); ++$i){
+					$loc = parse_url($anchors[$i]->href);
+					if(strtolower($loc['path']) === strtolower($uri)){
+						$exists = true;
+						$path = strtolower($loc['path']);
+						break;
+					}
+				}
+				if($exists){
+					$pingArr = $sql->query('SELECT * FROM `pingbacks` WHERE `slug`=\''.$slug.'\'');
+					$already = false;
+					for($i = 0; $i < count($pingArr); ++$i){
+						$pURL = parse_url($pingArr[$i]['url']);
+						if(strtolower($pURL['path']) === $path){
+							$this->_response = 48;
+							$this->_responseMessage = 'This pingback has already been registered';
+							return $this->pingServer();
+						}
+					}
+					if(!$already){
+						$this->_response = 'SUCCESS';
+						$this->_responseMessage = 'Pingback successfully registered';
+						$this->savePing($slug);
+						return $this->pingServer();
+					}
+				}
+				else{
+					$this->_response = 17;
+					$this->_responseMessage = 'The source URI does not appear to contain the link.';
+					return $this->pingServer();
+				}
+			}
+			else{
+				$this->_response = 16;
+				$this->_responseMessage = 'The source URI does not exist';
+				return $this->pingServer();
+			}
+		}
+	}
+	function savePing($slug){
+		$sql3 = new Sql_query('pingbacks');
+		$sql3->query('INSERT INTO `pingbacks` (slug, url, path, type) VALUES (
+			\''.$slug.'\',
+			\''.$this->_sourceURL.'\',
+			\''.$this->_destinationURL.'\',
+			\'inbound\'
+		)');
+		$sql3->query('UPDATE `posts` SET `pings`=(1 + `pings`) WHERE `slug`=\''.$slug.'\'');
+	}
+	function pingServer(){
+		if($this->_response === 'SUCCESS'){
+			return new xmlrpcresp(new xmlrpcval($this->_responseMessage, "string"));
+		}
+		else{
+			return new xmlrpcresp(0, $this->_response, $this->_responseMessage);	
+		}
+	}
 }

@@ -1,17 +1,19 @@
 <?php
 define('DS', '/');
-define('ROOT', dirname(__FILE__));
+define('ROOT', dirname(dirname(dirname(__FILE__))));
 define('MAIN', 'reflexion');
 define('CRON_JOB',true);
 error_reporting(E_ALL);
 ini_set('display_errors', 'Off');
 ini_set('log_errors','On');
 ini_set('error_log', ROOT.DS.MAIN.DS.'tmp'.DS.'logs'.DS.'error.log');
-function session_check_override(){
-	return true;
+
+function loadIntClass($className){
+	if(file_exists(ROOT.DS.MAIN.DS.'classes'.DS.'internals'.DS.$className.'.internal.php')){
+		require_once(ROOT.DS.MAIN.DS.'classes'.DS.'internals'.DS.$className.'.internal.php');
+	}
 }
 require(ROOT.DS.MAIN.DS.'library'.DS.'cron_jobs.php');
-
 function checkSet(){
 	global $cronJobs;
 	$count = count($cronJobs);
