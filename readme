@@ -235,12 +235,6 @@ database: 'Yourdatabase'
 			allownull : false
 			key :
 			default : NUL
-		column : `type`
-			type :  text
-			length : 
-			allownull : false
-			key :
-			default : NUL
 	table : `posts`
 		column : `id`
 			type :  bigint
@@ -332,7 +326,7 @@ database: 'Yourdatabase'
 			length : 11
 			allownull : true
 			key :
-			default : NULL
+			default : 0
 		column : `comments_off`
 			type :  bigint
 			length : 20
@@ -344,13 +338,46 @@ database: 'Yourdatabase'
 			length : 11
 			allownull : true
 			key :
-			default : NULL
+			default : 0
 		column : `pings`
 			type :  int
 			length : 11
 			allownull : true
 			key :
+			default : 0
+     table : `pingbacks`
+        column : `id`
+			type :  bigint
+			length : 20
+			allownull : false
+			key : primary (MUL)
 			default : NULL
+			extra : auto_increment
+        column : `slug`
+			type :  text
+			length :
+			allownull : false
+			key :
+			default : NULL
+        column : `url`
+			type :  varchar
+			length : 255
+			allownull : false
+			key :
+			default : NULL
+        column : `path`
+			type :  varchar
+			length : 255
+			allownull : false
+			key :
+			default : NULL
+        column : `type`
+			type :  tinytext
+			length : 
+			allownull : false
+			key :
+			default : NULL
+        	 
 
 -----------------------------------
 Requirements
@@ -380,7 +407,7 @@ post is published. I'll have more to offer on this subject soon.
 ===================================
 TO DO
 ===================================
--Finish Pingback Server
 -Finish file inserter on tiny_mce implementation in the "admin/index" file.
 -Comment post to server class
+-Login HTML/CSS
 -Documentation
