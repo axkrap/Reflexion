@@ -6,7 +6,6 @@ Created by Nathan Sweet. Reflexion is under the GNU liscence. It utilizes
 the following open source projects
 -Simple HTML DOM Parser (http://simplehtmldom.sourceforge.net/)
 -PHP XML-RPC (http://phpxmlrpc.sourceforge.net/)
--PHP-Pingback (https://github.com/frekw/PHP-Pingback)
 
 -----------------------------------
 Introduction
